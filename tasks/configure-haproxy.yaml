@@ -1,6 +1,6 @@
 - name: Generate HAProxy configuration
   template:
-    src: haproxy.cfg.j2
-    dest:  /tmp/haproxy.cfg # /etc/haproxy/haproxy.cfg
-  #notify:
-  #  - restart haproxy
+    src: haproxy-tcp.cfg.j2
+    dest:  /etc/haproxy/haproxy.cfg
+  notify:
+    - restart haproxy

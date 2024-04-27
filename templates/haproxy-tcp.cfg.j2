@@ -31,6 +31,25 @@ defaults
     timeout check           {{ default_timeout_check }}
     maxconn                 {{ default_max_connections }}
 
+listen  stats
+        bind *:1936
+        mode            http
+        log             global
+
+        maxconn 10
+
+        #clitimeout      100s
+        #srvtimeout      100s
+        #contimeout      100s
+        timeout queue   100s
+
+        stats enable
+        stats hide-version
+        stats refresh 30s
+        stats show-node
+        stats auth admin:password
+        stats uri  /haproxy?stats
+
 #---------------------------------------------------------------------
 # Master and Worker Nodes Configuration
 #---------------------------------------------------------------------
@@ -43,9 +62,9 @@ frontend openshift-api-server
 backend openshift-api-server
     balance source
     mode tcp
-    {% for master in masters %}
+{% for master in masters %}
     server master{{ loop.index }} {{ master.ip }}:6443 check
-    {% endfor %}
+{% endfor %}
 
 frontend machine-config-server
     bind *:22623
@@ -56,9 +75,9 @@ frontend machine-config-server
 backend machine-config-server
     balance source
     mode tcp
-    {% for master in masters %}
+{% for master in masters %}
     server master{{ loop.index }} {{ master.ip }}:22623 check
-    {% endfor %}
+{% endfor %}
 
 frontend ingress-http
     bind *:80
@@ -69,9 +88,9 @@ frontend ingress-http
 backend ingress-http
     balance source
     mode tcp
-    {% for worker in workers %}
+{% for worker in workers %}
     server worker{{ loop.index }} {{ worker.ip }}:80 check
-    {% endfor %}
+{% endfor %}
 
 frontend ingress-https
     bind *:443
@@ -82,6 +101,6 @@ frontend ingress-https
 backend ingress-https
     balance source
     mode tcp
-    {% for worker in workers %}
+{% for worker in workers %}
     server worker{{ loop.index }} {{ worker.ip }}:443 check
-    {% endfor %}
+{% endfor %}

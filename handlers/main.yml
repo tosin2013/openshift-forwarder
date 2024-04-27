@@ -1,2 +1,7 @@
 ---
 # handlers file for openshift-forwarder
+- name: restart haproxy
+  systemd:
+    name: haproxy
+    state: restarted
+    enabled: yes
