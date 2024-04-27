@@ -75,7 +75,9 @@ EOF
 Run the playbook:
 ```bash
 ansible-playbook ./playbooks/openshift-forwarder.yml --extra-vars "@vars/vars.yml" -e "ansible_python_interpreter=/usr/bin/python3" -v
-# on RHEL 8.x, use the following command 
+```
+on RHEL 8.x, use the following command 
+```bash
 ansible-playbook ./playbooks/openshift-forwarder.yml --extra-vars "@vars/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
 ```
 
