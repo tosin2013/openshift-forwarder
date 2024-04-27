@@ -1,2 +1,5 @@
 ---
 # tasks file for openshift-forwarder
+- name:  configure-haproxy
+  include_tasks: configure-haproxy.yaml
+  #tags: configure-ocp

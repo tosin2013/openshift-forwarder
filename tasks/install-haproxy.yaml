@@ -1,0 +1,45 @@
+- name: Install HAProxy
+  yum:
+    name: haproxy
+    state: present
+
+- name: Install firewalld if not installed (ensuring it's started and enabled)
+  package:
+    name: firewalld
+    state: present
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Add firewall rules for HAProxy
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: yes
+  loop:
+    - 80/tcp
+    - 443/tcp
+    - 6443/tcp
+    - 22623/tcp
+    - 32700/tcp
+    - 1936/tcp
+
+- name: Set semanage ports for SELinux
+  seport:
+    ports: "{{ item.port }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  loop:
+    - { port: 22623 }
+    - { port: 6443 }
+    - { port: 32700 }
+    - { port: 1936 }
+
+- name: Start and enable HAProxy service
+  systemd:
+    name: haproxy
+    state: started
+    enabled: true

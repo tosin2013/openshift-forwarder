@@ -1,0 +1,87 @@
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    log         {{ haproxy_log_address }} local2
+    chroot      {{ haproxy_chroot_directory }}
+    pidfile     {{ haproxy_pidfile }}
+    maxconn     {{ haproxy_max_connections }}
+    user        haproxy
+    group       haproxy
+    daemon
+    stats socket {{ haproxy_stats_socket }}
+
+#---------------------------------------------------------------------
+# Common defaults
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option                  http-server-close
+    option                  redispatch
+    retries                 {{ default_retries }}
+    timeout http-request    {{ default_timeout_http_request }}
+    timeout queue           {{ default_timeout_queue }}
+    timeout connect         {{ default_timeout_connect }}
+    timeout client          {{ default_timeout_client }}
+    timeout server          {{ default_timeout_server }}
+    timeout http-keep-alive {{ default_timeout_http_keep_alive }}
+    timeout check           {{ default_timeout_check }}
+    maxconn                 {{ default_max_connections }}
+
+#---------------------------------------------------------------------
+# Master and Worker Nodes Configuration
+#---------------------------------------------------------------------
+frontend openshift-api-server
+    bind *:6443
+    default_backend openshift-api-server
+    mode tcp
+    option tcplog
+
+backend openshift-api-server
+    balance source
+    mode tcp
+    {% for master in masters %}
+    server master{{ loop.index }} {{ master.ip }}:6443 check
+    {% endfor %}
+
+frontend machine-config-server
+    bind *:22623
+    default_backend machine-config-server
+    mode tcp
+    option tcplog
+
+backend machine-config-server
+    balance source
+    mode tcp
+    {% for master in masters %}
+    server master{{ loop.index }} {{ master.ip }}:22623 check
+    {% endfor %}
+
+frontend ingress-http
+    bind *:80
+    default_backend ingress-http
+    mode tcp
+    option tcplog
+
+backend ingress-http
+    balance source
+    mode tcp
+    {% for worker in workers %}
+    server worker{{ loop.index }} {{ worker.ip }}:80 check
+    {% endfor %}
+
+frontend ingress-https
+    bind *:443
+    default_backend ingress-https
+    mode tcp
+    option tcplog
+
+backend ingress-https
+    balance source
+    mode tcp
+    {% for worker in workers %}
+    server worker{{ loop.index }} {{ worker.ip }}:443 check
+    {% endfor %}
