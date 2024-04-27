@@ -4,3 +4,4 @@
     dest:  /etc/haproxy/haproxy.cfg
   notify:
     - restart haproxy
+
