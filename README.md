@@ -1,12 +1,14 @@
-Role Name
+OpenShift Forwarder
 =========
 
-A brief description of the role goes here.
+This Ansible role configures HA Proxy for OpenShift Container Platform (OCP) to provide load balancing and high availability for the OpenShift API and ingress traffic.
+
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+* OpenShift Container Platform 4.8 or later
+* Ansible 2.9 or later
 
 Role Variables
 --------------
